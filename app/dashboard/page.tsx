@@ -57,8 +57,14 @@ export default function DashboardPage() {
               </div>
             </div>
             
-            <div className="pt-4 border-t">
-              <Button onClick={handleLogout} variant="outline">
+            <div className="pt-4 border-t space-y-3">
+              <Button 
+                onClick={() => router.push('/todos')} 
+                className="w-full"
+              >
+                Go to My Todos
+              </Button>
+              <Button onClick={handleLogout} variant="outline" className="w-full">
                 Logout
               </Button>
             </div>
