@@ -52,7 +52,7 @@ export default function DashboardPage() {
               <h3 className="text-lg font-semibold">User Information</h3>
               <div className="space-y-1 text-sm">
                 <p><span className="font-medium">Username:</span> {user.username}</p>
-                <p><span className="font-medium">Email:</span> {user.email}</p>
+
                 <p><span className="font-medium">User ID:</span> {user.id}</p>
               </div>
             </div>
