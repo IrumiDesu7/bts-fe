@@ -66,5 +66,6 @@ export async function apiRequest<T>(
 export function createAuthHeaders(token: string): HeadersInit {
   return {
     'Authorization': `Bearer ${token}`,
+    'Content-Type': 'application/json',
   }
 }
