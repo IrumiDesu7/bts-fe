@@ -23,12 +23,12 @@ export function middleware(request: NextRequest) {
   }
 
   if (isAuthRoute && token) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+    return NextResponse.redirect(new URL("/todos", request.url));
   }
 
   if (pathname === "/") {
     if (token) {
-      return NextResponse.redirect(new URL("/dashboard", request.url));
+      return NextResponse.redirect(new URL("/todos", request.url));
     } else {
       return NextResponse.redirect(new URL("/login", request.url));
     }

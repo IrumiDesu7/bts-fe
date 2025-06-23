@@ -65,7 +65,7 @@ export function RegisterForm({
 
     try {
       await register({ username, email, password })
-      router.push('/dashboard')
+      router.push('/todos')
     } catch {
       setShowError(true)
     }

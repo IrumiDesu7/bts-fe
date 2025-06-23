@@ -38,7 +38,7 @@ const searchParams = useSearchParams();
       await login({ username, password });
 
       const callbackUrl = searchParams.get("callbackUrl");
-      window.location.href = callbackUrl || "/dashboard";
+      window.location.href = callbackUrl || "/todos";
     } catch {
       setShowError(true);
     }

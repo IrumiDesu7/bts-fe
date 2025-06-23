@@ -72,7 +72,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
                 const userData: User = {
                   id: credentials.username,
                   username: credentials.username,
-                  email: credentials.username,
                 };
         
                 setToken(response.data.token);
@@ -109,7 +108,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
         const userData: User = {
           id: credentials.username,
           username: credentials.username,
-          email: credentials.email,
         };
 
         setToken(response.data.token);
