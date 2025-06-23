@@ -1,57 +1,66 @@
-import { ChecklistItem } from '@/types/checklist'
+import { ChecklistItem, ApiResponse } from '@/types/checklist'
 import { apiRequest, createAuthHeaders } from './client'
 
 export async function getChecklistItems(checklistId: number, token: string): Promise<ChecklistItem[]> {
-  return apiRequest<ChecklistItem[]>(`/checklist/${checklistId}/item`, {
+  const response = await apiRequest<ApiResponse<ChecklistItem[]>>(`/checklist/${checklistId}/item`, {
     method: 'GET',
     headers: createAuthHeaders(token),
   })
+  return response.data
 }
+
 
 export async function createChecklistItem(
   checklistId: number, 
   itemName: string, 
   token: string
 ): Promise<ChecklistItem> {
-  return apiRequest<ChecklistItem>(`/checklist/${checklistId}/item`, {
+  const response = await apiRequest<ApiResponse<ChecklistItem>>(`/checklist/${checklistId}/item`, {
     method: 'POST',
     headers: createAuthHeaders(token),
     body: JSON.stringify({ itemName }),
   })
+  return response.data
 }
+
 
 export async function getChecklistItem(
   checklistId: number, 
   checklistItemId: number, 
   token: string
 ): Promise<ChecklistItem> {
-  return apiRequest<ChecklistItem>(`/checklist/${checklistId}/item/${checklistItemId}`, {
+  const response = await apiRequest<ApiResponse<ChecklistItem>>(`/checklist/${checklistId}/item/${checklistItemId}`, {
     method: 'GET',
     headers: createAuthHeaders(token),
   })
+  return response.data
 }
+
 
 export async function updateChecklistItemStatus(
   checklistId: number, 
   checklistItemId: number, 
   token: string
 ): Promise<ChecklistItem> {
-  return apiRequest<ChecklistItem>(`/checklist/${checklistId}/item/${checklistItemId}`, {
+  const response = await apiRequest<ApiResponse<ChecklistItem>>(`/checklist/${checklistId}/item/${checklistItemId}`, {
     method: 'PUT',
     headers: createAuthHeaders(token),
   })
+  return response.data
 }
+
 
 export async function deleteChecklistItem(
   checklistId: number, 
   checklistItemId: number, 
   token: string
 ): Promise<void> {
-  return apiRequest<void>(`/checklist/${checklistId}/item/${checklistItemId}`, {
+  await apiRequest<ApiResponse<null>>(`/checklist/${checklistId}/item/${checklistItemId}`, {
     method: 'DELETE',
     headers: createAuthHeaders(token),
   })
 }
+
 
 export async function renameChecklistItem(
   checklistId: number, 
@@ -59,9 +68,10 @@ export async function renameChecklistItem(
   itemName: string, 
   token: string
 ): Promise<ChecklistItem> {
-  return apiRequest<ChecklistItem>(`/checklist/${checklistId}/item/rename/${checklistItemId}`, {
+  const response = await apiRequest<ApiResponse<ChecklistItem>>(`/checklist/${checklistId}/item/rename/${checklistItemId}`, {
     method: 'PUT',
     headers: createAuthHeaders(token),
     body: JSON.stringify({ itemName }),
   })
+  return response.data
 }

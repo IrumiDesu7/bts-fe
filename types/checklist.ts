@@ -1,8 +1,16 @@
 export interface Checklist {
   id: number
   name: string
+  items: ChecklistItem[] | null
+  checklistCompletionStatus: boolean
   createdAt?: string
-  updatedAt?: string
+}
+
+export interface ApiResponse<T> {
+  statusCode: number
+  message: string
+  errorMessage?: string | null
+  data: T
 }
 
 export interface CreateChecklistRequest {
@@ -12,11 +20,9 @@ export interface CreateChecklistRequest {
 export interface ChecklistItem {
   id: number
   name: string
-  completed: boolean
-  checklistId: number
-  createdAt?: string
-  updatedAt?: string
+  itemCompletionStatus: boolean
 }
+
 
 export interface CreateChecklistItemRequest {
   itemName: string

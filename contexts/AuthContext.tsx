@@ -62,36 +62,41 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   const login = async (credentials: LoginRequest) => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const response = await loginUser(credentials);
-
-      if (response.token) {
-        const userData: User = {
-          id: credentials.username,
-          username: credentials.username,
-          email: credentials.username,
-        };
-
-        setToken(response.token);
-        setUser(userData);
-
-        localStorage.setItem(TOKEN_KEY, response.token);
-        localStorage.setItem(USER_KEY, JSON.stringify(userData));
-        setCookie(TOKEN_KEY, response.token);
-      } else {
-        throw new Error(response.message || "Login failed");
-      }
-    } catch (error: any) {
-      const errorMessage = error.message || "Login failed. Please try again.";
-      setError(errorMessage);
-      throw error;
-    } finally {
-      setIsLoading(false);
-    }
-  };
+            setIsLoading(true);
+            setError(null);
+        
+            try {
+              const response = await loginUser(credentials);
+        
+              if (response.data?.token) {
+                const userData: User = {
+                  id: credentials.username,
+                  username: credentials.username,
+                  email: credentials.username,
+                };
+        
+                setToken(response.data.token);
+                setUser(userData);
+        
+                localStorage.setItem(TOKEN_KEY, response.data.token);
+                localStorage.setItem(USER_KEY, JSON.stringify(userData));
+                setCookie(TOKEN_KEY, response.data.token);
+        
+                // Wait a brief moment to ensure cookie is set
+                await new Promise(resolve => setTimeout(resolve, 100));
+              } else {
+                throw new Error(response.message || "Login failed");
+              }
+            } catch (error: any) {
+              const errorMessage = error.message || "Login failed. Please try again.";
+              setError(errorMessage);
+              throw error;
+            } finally {
+              setIsLoading(false);
+            }
+          };
+;
+;
 
   const register = async (credentials: RegisterRequest) => {
     setIsLoading(true);
@@ -100,19 +105,19 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       const response = await registerUser(credentials);
 
-      if (response.token) {
+      if (response.data?.token) {
         const userData: User = {
           id: credentials.username,
           username: credentials.username,
           email: credentials.email,
         };
 
-        setToken(response.token);
+        setToken(response.data.token);
         setUser(userData);
 
-        localStorage.setItem(TOKEN_KEY, response.token);
+        localStorage.setItem(TOKEN_KEY, response.data.token);
         localStorage.setItem(USER_KEY, JSON.stringify(userData));
-        setCookie(TOKEN_KEY, response.token);
+        setCookie(TOKEN_KEY, response.data.token);
       } else {
         throw new Error(response.message || "Registration failed");
       }

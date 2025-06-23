@@ -10,10 +10,14 @@ export interface RegisterRequest {
 }
 
 export interface AuthResponse {
-  token?: string
-  message?: string
-  user?: User
+  statusCode: number
+  message: string
+  errorMessage?: string | null
+  data?: {
+    token: string
+  }
 }
+
 
 export interface User {
   id: string

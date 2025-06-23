@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { getAllChecklists, createChecklist, deleteChecklist } from '@/lib/api/checklist'
-import { getChecklistItems } from '@/lib/api/checklist-items'
 import type { Checklist } from '@/types/checklist'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -32,22 +31,18 @@ export default function TodosPage() {
       const data = await getAllChecklists(token)
       setTodos(data)
       
-      // Fetch progress for each checklist
+      // Calculate progress for each checklist
       const progressData: Record<number, { completed: number; total: number }> = {}
-      await Promise.all(
-        data.map(async (checklist) => {
-          try {
-            const items = await getChecklistItems(checklist.id, token)
-            progressData[checklist.id] = {
-              completed: items.filter(item => item.completed).length,
-              total: items.length
-            }
-          } catch (error) {
-            console.error(`Error fetching items for checklist ${checklist.id}:`, error)
-            progressData[checklist.id] = { completed: 0, total: 0 }
+      data.forEach((checklist) => {
+        if (checklist.items) {
+          progressData[checklist.id] = {
+            completed: checklist.items.filter(item => item.itemCompletionStatus).length,
+            total: checklist.items.length
           }
-        })
-      )
+        } else {
+          progressData[checklist.id] = { completed: 0, total: 0 }
+        }
+      })
       setTodoProgress(progressData)
     } catch (error) {
       toast.error('Failed to fetch todos')

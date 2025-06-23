@@ -178,7 +178,7 @@ export default function TodoDetailPage() {
     )
   }
 
-  const completedCount = items.filter(item => item.completed).length
+  const completedCount = items.filter(item => item.itemCompletionStatus).length
   const totalCount = items.length
 
   return (
@@ -230,7 +230,7 @@ export default function TodoDetailPage() {
               <CardContent className="p-4">
                 <div className="flex items-center gap-3">
                   <Checkbox
-                    checked={item.completed}
+                    checked={item.itemCompletionStatus}
                     onCheckedChange={() => handleToggleItem(item.id)}
                   />
                   
@@ -268,7 +268,7 @@ export default function TodoDetailPage() {
                   ) : (
                     <>
                       <span 
-                        className={`flex-1 ${item.completed ? 'line-through text-muted-foreground' : ''}`}
+                        className={`flex-1 ${item.itemCompletionStatus ? 'line-through text-muted-foreground' : ''}`}
                       >
                         {item.name}
                       </span>

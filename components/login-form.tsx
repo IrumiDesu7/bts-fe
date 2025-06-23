@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,8 +23,7 @@ export function LoginForm({
   const [password, setPassword] = useState("");
   const [showError, setShowError] = useState(false);
   const { login, isLoading, error } = useAuth();
-  const router = useRouter();
-  const searchParams = useSearchParams();
+const searchParams = useSearchParams();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,7 +38,7 @@ export function LoginForm({
       await login({ username, password });
 
       const callbackUrl = searchParams.get("callbackUrl");
-      router.push(callbackUrl || "/dashboard");
+      window.location.href = callbackUrl || "/dashboard";
     } catch {
       setShowError(true);
     }
