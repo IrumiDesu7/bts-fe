@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { getAllChecklists, createChecklist, deleteChecklist } from '@/lib/api/checklist'
+import { getChecklistItems } from '@/lib/api/checklist-items'
 import type { Checklist } from '@/types/checklist'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -17,6 +18,7 @@ export default function TodosPage() {
   const { token, user } = useAuth()
   const router = useRouter()
   const [todos, setTodos] = useState<Checklist[]>([])
+  const [todoProgress, setTodoProgress] = useState<Record<number, { completed: number; total: number }>>({})
   const [loading, setLoading] = useState(true)
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [newTodoName, setNewTodoName] = useState('')
@@ -29,6 +31,24 @@ export default function TodosPage() {
       setLoading(true)
       const data = await getAllChecklists(token)
       setTodos(data)
+      
+      // Fetch progress for each checklist
+      const progressData: Record<number, { completed: number; total: number }> = {}
+      await Promise.all(
+        data.map(async (checklist) => {
+          try {
+            const items = await getChecklistItems(checklist.id, token)
+            progressData[checklist.id] = {
+              completed: items.filter(item => item.completed).length,
+              total: items.length
+            }
+          } catch (error) {
+            console.error(`Error fetching items for checklist ${checklist.id}:`, error)
+            progressData[checklist.id] = { completed: 0, total: 0 }
+          }
+        })
+      )
+      setTodoProgress(progressData)
     } catch (error) {
       toast.error('Failed to fetch todos')
       console.error('Error fetching todos:', error)
@@ -169,30 +189,58 @@ export default function TodosPage() {
         </Card>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {todos.map((todo) => (
-            <Card key={todo.id} className="relative group">
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  {todo.name}
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="opacity-0 group-hover:opacity-100 transition-opacity"
-                    onClick={() => handleDeleteTodo(todo.id)}
-                  >
-                    <Trash2 className="h-4 w-4 text-destructive" />
-                  </Button>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {todo.createdAt && (
-                  <p className="text-sm text-muted-foreground">
-                    Created: {new Date(todo.createdAt).toLocaleDateString()}
-                  </p>
-                )}
-              </CardContent>
-            </Card>
-          ))}
+          {todos.map((todo) => {
+            const progress = todoProgress[todo.id] || { completed: 0, total: 0 }
+            const progressPercentage = progress.total > 0 ? (progress.completed / progress.total) * 100 : 0
+            
+            return (
+              <Card 
+                key={todo.id} 
+                className="relative group cursor-pointer hover:shadow-lg transition-shadow"
+                onClick={() => router.push(`/todos/${todo.id}`)}
+              >
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between">
+                    {todo.name}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleDeleteTodo(todo.id)
+                      }}
+                    >
+                      <Trash2 className="h-4 w-4 text-destructive" />
+                    </Button>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">
+                        {progress.completed} of {progress.total} completed
+                      </span>
+                      <span className="text-muted-foreground">
+                        {Math.round(progressPercentage)}%
+                      </span>
+                    </div>
+                    <div className="w-full bg-muted rounded-full h-2">
+                      <div 
+                        className="bg-primary h-2 rounded-full transition-all duration-300"
+                        style={{ width: `${progressPercentage}%` }}
+                      />
+                    </div>
+                    {todo.createdAt && (
+                      <p className="text-sm text-muted-foreground">
+                        Created: {new Date(todo.createdAt).toLocaleDateString()}
+                      </p>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            )
+          })}
         </div>
       )}
     </div>
